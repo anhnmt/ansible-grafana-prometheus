@@ -1,0 +1,4 @@
+- hosts: node_exporter
+  become: yes
+  roles:
+    - prometheus.prometheus.node_exporter

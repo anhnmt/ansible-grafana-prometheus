@@ -1,0 +1,97 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: Alerts
+      folder: Alerts
+      interval: 1m
+      rules:
+        - uid: b404c26d-942c-4bc7-9af8-ac0b20aec39b
+          title: Alert CPU
+          condition: CPU
+          data:
+            - refId: CPU
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: b236aa41-a503-4e5b-a361-cfb0f57360d4
+              model:
+                editorMode: code
+                expr: (round(100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[10m])) * 100)) > 80) * on(instance) group_left(nodename) (node_uname_info)
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: CPU
+          noDataState: OK
+          execErrState: Error
+          for: 10m
+          isPaused: false
+        - uid: cf4d3cf8-ad5f-4fdf-a349-ee63e62768d6
+          title: Alert RAM
+          condition: RAM
+          data:
+            - refId: RAM
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: b236aa41-a503-4e5b-a361-cfb0f57360d4
+              model:
+                editorMode: code
+                exemplar: false
+                expr: round(100 * (1 - ((avg_over_time(node_memory_MemFree_bytes[10m]) + avg_over_time(node_memory_Cached_bytes[10m]) + avg_over_time(node_memory_Buffers_bytes[10m])) / avg_over_time(node_memory_MemTotal_bytes[10m]))) > 80) * on(instance) group_left(nodename) (node_uname_info)
+                instant: true
+                interval: ""
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: RAM
+          noDataState: OK
+          execErrState: Error
+          for: 10m
+          isPaused: false
+        - uid: b517b0fa-4824-4e99-aa5e-dc602d663a40
+          title: Alert DISK
+          condition: Disk
+          data:
+            - refId: Disk
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: b236aa41-a503-4e5b-a361-cfb0f57360d4
+              model:
+                editorMode: code
+                expr: round(100 - ((node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes{mountpoint="/"}) > 80)  * on(instance) group_left(nodename) (node_uname_info)
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: Disk
+          noDataState: OK
+          execErrState: Error
+          for: 10m
+          isPaused: false
+        - uid: c7f35f48-9c16-4a89-a04f-f204bd128824
+          title: Alert Container Down
+          condition: Container
+          data:
+            - refId: Container
+              relativeTimeRange:
+                from: 30
+                to: 0
+              datasourceUid: b236aa41-a503-4e5b-a361-cfb0f57360d4
+              model:
+                editorMode: code
+                expr: ((time() - container_last_seen{container_label_com_docker_compose_project_working_dir=~"/home/ubuntu/.*"}) > 60)
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: Container
+          noDataState: OK
+          execErrState: Error
+          for: 0s
+          isPaused: false

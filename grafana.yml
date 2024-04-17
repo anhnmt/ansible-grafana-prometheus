@@ -1,0 +1,17 @@
+- hosts: grafana
+  become: yes
+  roles:
+    - role: grafana.grafana.grafana
+      vars:
+        grafana_security:
+          admin_user: admin
+          admin_password: "123345345" # change your password
+
+#        grafana_dashboards:
+#          - dashboard_id: 1860 # Node Exporter Full
+#            revision_id: 36
+#          - dashboard_id: 15172 # Node Exporter for Prometheus Dashboard based on 11074
+#            revision_id: 6
+#          - dashboard_id: 14282 # cadvisor-exporter
+#            revision_id: 1
+#            datasource: prometheus

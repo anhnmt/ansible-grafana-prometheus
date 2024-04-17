@@ -1,0 +1,36 @@
+{{ define "alert.print_alert" -}}
+[{{ .Status | toUpper }}] {{ .Labels.alertname }}
+{{ if len .Values -}}
+Values:
+{{ range $refID, $value := .Values -}}
+- {{ $refID }} = {{ $value }}
+{{ end -}}
+{{ end -}}
+Labels:
+{{ range .Labels.SortedPairs -}}
+{{ if or (eq .Name "instance") (eq .Name "nodename") (eq .Name "device") (eq .Name "image") (eq .Name "name") -}}
+- {{ .Name }}: {{ .Value }}
+{{ end -}}
+{{ end -}}
+{{ if .Annotations -}}
+Annotations:
+{{ range .Annotations.SortedPairs -}}
+- {{ .Name }}: {{ .Value }}
+{{ end -}}
+{{ end -}}
+{{- end }}
+
+{{ define "alert.message" -}}
+{{ if .Alerts.Firing -}}
+{{ len .Alerts.Firing }} firing alert(s):
+{{ range .Alerts.Firing }}
+{{ template "alert.print_alert" .}}
+{{ end -}}
+{{ end }}
+{{ if .Alerts.Resolved -}}
+{{ len .Alerts.Resolved }} resolved alert(s):
+{{ range .Alerts.Resolved }}
+{{ template "alert.print_alert" .}}
+{{ end -}}
+{{ end }}
+{{- end }}
